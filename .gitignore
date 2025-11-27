@@ -1,0 +1,38 @@
+# 1. Folder Build (Sampah hasil compile) - WAJIB DI-IGNORE
+/build
+*/build
+*.apk
+*.aar
+*.ap_
+
+# 2. File Konfigurasi Lokal (Isi lokasi SDK tiap laptop beda) - SANGAT WAJIB
+local.properties
+
+# 3. Cache Android Studio & Gradle
+.gradle/
+.idea/workspace.xml
+.idea/libraries/
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/caches
+.idea/modules.xml
+.idea/runConfigurations.xml
+.idea/misc.xml
+*.iml
+
+# 4. File Sistem Operasi (Sampah Mac/Windows)
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 5. Kunci Keamanan (Keystore) - JANGAN UPLOAD KUNCI RAHASIA
+*.jks
+*.keystore
+*.pem
+*.p12
+*.key

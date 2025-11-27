@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Haups" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- Simplified Splash theme that inherits Theme.Haups to avoid requiring the
+         platform/AndroidX SplashScreen theme at runtime. The composable SplashScreen
+         will still be shown from SplashActivity. -->
+    <style name="Theme.Haups.Splash" parent="Theme.Haups">
+        <item name="android:windowBackground">@color/splash_background</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+</resources>

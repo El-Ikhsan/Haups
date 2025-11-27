@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Haups</string>
+    <string name="tab_home">Home</string>
+    <string name="tab_schedule">Schedule</string>
+    <string name="tab_logs">Logs</string>
+    <string name="tab_settings">Settings</string>
+</resources>
