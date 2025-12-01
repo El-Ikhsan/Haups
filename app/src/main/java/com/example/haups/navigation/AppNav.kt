@@ -41,7 +41,7 @@ fun AppNav(modifier: Modifier = Modifier) {
         NavigationRoute.Settings
     )
 
-    val selectedColor = colorResource(id = R.color.blue_primer)
+    val selectedColor = colorResource(id = R.color.cyan_primer)
     val unselectedColor = colorResource(id = R.color.grey_primer)
 
     Scaffold(
@@ -122,7 +122,7 @@ fun AppNav(modifier: Modifier = Modifier) {
                                         painter = painterResource(id = iconRes),
                                         contentDescription = null,
                                         // Icon tint: Putih jika dipilih (karena background berwarna), Abu jika tidak
-                                        tint = if (currentRoute == screen.route) Color.White else unselectedColor,
+                                        tint = if (currentRoute == screen.route) colorResource(R.color.dark_primer) else unselectedColor,
                                         modifier = Modifier.size(24.dp) // Ukuran Icon di dalam lingkaran
                                     )
                                 }

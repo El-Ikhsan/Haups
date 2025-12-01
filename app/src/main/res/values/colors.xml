@@ -12,12 +12,13 @@
     <!-- Primary colors -->
     <color name="grey_primer">#9EA1A9</color>
     <color name="white_outline_primer">#414246</color>
+    <color name="font_primer">#F9F8F6</color>
     <color name="dark_primer">#1b1c20</color>
     <color name="cyan_primer">#17B9A7</color>
-    <color name="red_primer">#C3041C</color>
+    <color name="red_primer">#f23d3d</color>
     <color name="yellow_primer">#D0C00B</color>
     <color name="green_primer">#056908</color>
-    <color name="blue_primer">#2f323a</color>
+    <color name="blue_primer">#22293E</color>
     <color name="grey_second">#2f323a</color>
     <color name="s3">#445069</color>
     <color name="s2">#5B9A8B</color>
