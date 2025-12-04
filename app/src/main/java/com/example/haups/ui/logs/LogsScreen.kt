@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -18,8 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.haups.R
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 data class FeedLog(
     val id: Int,
@@ -53,17 +53,20 @@ fun LogsScreen() {
 
     val filterOptions = listOf("Pakan Pagi", "Pakan Siang", "Pakan Malam")
 
-    Scaffold { paddingValues ->
+    Scaffold(containerColor = Color.Transparent) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(top = 20.dp)
+                .padding(bottom = paddingValues.calculateBottomPadding()),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // 1. Header "Riwayat Pakan" + 2. Icon Filter
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -71,7 +74,7 @@ fun LogsScreen() {
                     text = "Riwayat Pakan",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = colorResource(R.color.font_primer)
                 )
 
                 Box {
@@ -81,7 +84,7 @@ fun LogsScreen() {
                         modifier = Modifier
                             .size(32.dp)
                             .clickable { showFilterMenu = !showFilterMenu },
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = colorResource(R.color.cyan_primer)
                     )
 
                     // Dropdown menu untuk filter
@@ -152,15 +155,21 @@ fun LogsScreen() {
             ) {
                 items(filteredLogs) { log ->
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = if (log.isSuccess)
-                                MaterialTheme.colorScheme.surface
+                                colorResource(R.color.grey_second)
                             else
-                                MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)
-                        )
+                                colorResource(R.color.red_primer)
+                        ),
+                        border = if (log.isSuccess)
+                            BorderStroke(2.dp, colorResource(R.color.cyan_primer))
+                        else
+                            null
                     ) {
                         Row(
                             modifier = Modifier
@@ -173,7 +182,8 @@ fun LogsScreen() {
                                 modifier = Modifier
                                     .size(12.dp)
                                     .background(
-                                        color = if (log.isSuccess) Color.Green else Color.Red,
+                                        color = if (log.isSuccess) colorResource(R.color.cyan_primer)
+                                        else colorResource(R.color.dark_primer),
                                         shape = RoundedCornerShape(6.dp)
                                     )
                             )
@@ -185,7 +195,7 @@ fun LogsScreen() {
                                 text = log.time,
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color = colorResource(R.color.font_primer),
                                 modifier = Modifier.width(80.dp)
                             )
 
@@ -199,17 +209,19 @@ fun LogsScreen() {
                                     text = log.status,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Medium,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = colorResource(R.color.font_primer)
                                 )
                                 Text(
                                     text = log.date,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = if (log.isSuccess) colorResource(R.color.grey_primer)
+                                    else colorResource(R.color.font_primer).copy(alpha = 0.8f)
                                 )
                                 Text(
                                     text = if (log.isSuccess) "Berhasil" else "Gagal",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = if (log.isSuccess) Color.Green else Color.Red,
+                                    color = if (log.isSuccess) colorResource(R.color.cyan_primer)
+                                    else colorResource(R.color.font_primer),
                                     fontWeight = FontWeight.Medium
                                 )
                             }

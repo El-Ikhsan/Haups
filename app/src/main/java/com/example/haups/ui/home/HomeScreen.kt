@@ -1,5 +1,6 @@
 package com.example.haups.ui.home
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -56,12 +57,17 @@ fun StatusCard(
     title: String,
     value: String,
     iconRes: Int? = null,
+    borderColor: Color = colorResource(R.color.white_outline_primer),
     backgroundColor: Color = colorResource(R.color.blue_primer) // default, bisa diatur
 ) {
     Card(
         modifier = modifier
             .height(120.dp),
         shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            width = 2.dp,
+            color = borderColor
+        ),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -83,7 +89,7 @@ fun StatusCard(
                         Icon(
                             painter = painterResource(id = iconRes),
                             contentDescription = null,
-                            tint = colorResource(R.color.white),
+                            tint = borderColor,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -96,7 +102,7 @@ fun StatusCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = colorResource(R.color.dark_primer),
+                    color = colorResource(R.color.font_primer),
                 ),
                 maxLines = 1,
                 overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
@@ -107,7 +113,8 @@ fun StatusCard(
             // value centered under the title
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 Text(text = value, style = MaterialTheme.typography.titleMedium.copy(
-                    color = colorResource(R.color.dark_primer),
+                    color = colorResource(R.color.font_primer),
+                    fontWeight = FontWeight.Bold
                 ))
             }
         }
@@ -212,7 +219,7 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(bottom = paddingValues.calculateBottomPadding()),
-            verticalArrangement = Arrangement.Top,
+            verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Hero section: full-width, fit background, no padding on sides and top
@@ -240,7 +247,7 @@ fun HomeScreen(
                 Text(
                     text = "sistem kontrol pakan ikan otomatis",
                     style = MaterialTheme.typography.titleLarge.copy(
-                        color = Color.White, // Mengubah warna teks menjadi putih agar kontras dengan background
+                        color = colorResource(R.color.font_primer),
                         fontWeight = FontWeight.SemiBold
                     ),
                     textAlign = TextAlign.Center
@@ -248,47 +255,47 @@ fun HomeScreen(
             }
 
             // Content with horizontal padding
-            Column(
+
+            // Status cards row
+            Row(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-
-
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Status cards row
-                Row(modifier = Modifier
-                    .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
                     StatusCard(
                         modifier = Modifier.weight(1f),
                         title = "sisa pakan",
                         value = "${remainingFeed.value} g",
                         iconRes = R.drawable.ic_tab_home,
-                        backgroundColor = colorResource(R.color.s1)
+                        borderColor = colorResource(R.color.cyan_primer),
+                        backgroundColor = colorResource(R.color.dark_primer)
                     )
                     StatusCard(
                         modifier = Modifier.weight(1f),
                         title = "pakan terakhir",
                         value = lastFeedTime.value,
                         iconRes = R.drawable.ic_tab_schedule,
-                        backgroundColor = colorResource(R.color.s2)
+                        borderColor = colorResource(R.color.red_primer),
+                        backgroundColor = colorResource(R.color.dark_primer)
                     )
                     StatusCard(
                         modifier = Modifier.weight(1f),
                         title = "koneksi",
                         value = connection.value.label,
                         iconRes = R.drawable.ic_tab_settings,
-                        backgroundColor = colorResource(R.color.s3)
+                        borderColor = colorResource(R.color.yellow_primer),
+                        backgroundColor = colorResource(R.color.dark_primer)
                     )
-                }
+            }
 
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Actions
-                // Single full-width Feed Now button with horizontal padding 30.dp
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            // Actions - Single full-width Feed Now button with horizontal padding
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
                     Button(
                         onClick = { postFeed() },
                         enabled = !isFeeding.value,
@@ -318,35 +325,57 @@ fun HomeScreen(
                             Text(
                                 text = "Beri Pakan Sekarang",
                                 style = MaterialTheme.typography.titleMedium.copy(
-                                    color = colorResource(R.color.dark_primer), // Mengubah warna teks menjadi putih agar kontras dengan background
-                                    fontWeight = FontWeight.SemiBold
+                                    color = colorResource(R.color.dark_primer),
+                                    fontWeight = FontWeight.Bold
                                 ),
                                 textAlign = TextAlign.Center)
                         }
                     }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Text(text = "History Feed", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth())
             }
 
-            LazyColumn(modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f, fill = false)
-                .padding(horizontal = 16.dp)) {
+
+            // History Feed Header
+            Text(
+                text = "Riwayat Pakan",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(R.color.font_primer),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                textAlign = TextAlign.Start
+            )
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 items(feedLogs) { log ->
                     Card(
-                        shape = RoundedCornerShape(8.dp),
-                        colors = CardDefaults.cardColors(containerColor = colorResource(R.color.cyan_primer)),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp)
+                        border = BorderStroke(
+                            width = 2.dp,
+                            colorResource(id = R.color.white_outline_primer)
+                        ),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = colorResource(R.color.grey_second)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            Text(text = log.timestamp, style = MaterialTheme.typography.bodySmall)
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = log.timestamp,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = colorResource(R.color.grey_primer)
+                            )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = log.result, style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                text = log.result,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = colorResource(R.color.font_primer),
+                                fontWeight = FontWeight.Medium
+                            )
                         }
                     }
                 }

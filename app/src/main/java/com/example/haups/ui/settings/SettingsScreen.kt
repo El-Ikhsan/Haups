@@ -1,5 +1,6 @@
 package com.example.haups.ui.settings
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,30 +31,36 @@ fun SettingsScreen(
     var isOnline by remember { mutableStateOf(false) }
     var ipAddress by remember { mutableStateOf("192.168.1.100") }
 
-    Scaffold { paddingValues ->
+    Scaffold(containerColor = Color.Transparent) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(top = 20.dp)
+                .padding(bottom = paddingValues.calculateBottomPadding()),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // 1. Header "Pengaturan Alat"
             Text(
                 text = "Pengaturan Alat",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                color = colorResource(R.color.font_primer),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                textAlign = TextAlign.Start
             )
 
             // 2. Lingkaran besar "Cari" untuk scan ESP32
             Box(
                 modifier = Modifier
-                    .size(120.dp)
+                    .padding(top = 40.dp)
+                    .padding(end = 65.dp)
+                    .size(200.dp)
                     .clip(CircleShape)
-                    .background(Color.Black)
-                    .border(3.dp, Color.Blue, CircleShape)
+                    .background(colorResource(R.color.dark_primer))
+                    .border(5.dp, colorResource(R.color.cyan_primer), CircleShape)
                     .clickable {
                         // Fungsi scan perangkat ESP32
                         isOnline = true
@@ -62,8 +70,8 @@ fun SettingsScreen(
             ) {
                 Text(
                     text = "CARI",
-                    color = Color.White,
-                    fontSize = 18.sp,
+                    color = colorResource(R.color.font_primer),
+                    fontSize = 30.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -71,11 +79,11 @@ fun SettingsScreen(
             // 3. Lingkaran kecil "Tes Koneksi" (geser ke kanan)
             Box(
                 modifier = Modifier
-                    .padding(start = 60.dp)
-                    .size(80.dp)
+                    .padding(start = 120.dp)
+                    .size(95.dp)
                     .clip(CircleShape)
-                    .background(Color.Black)
-                    .border(2.dp, Color(0xFFFF9800), CircleShape)
+                    .background(colorResource(R.color.dark_primer))
+                    .border(2.5.dp, colorResource(R.color.yellow_primer), CircleShape)
                     .clickable {
                         // Fungsi tes koneksi ESP32
                     },
@@ -83,7 +91,7 @@ fun SettingsScreen(
             ) {
                 Text(
                     text = "TES\nKONEKSI",
-                    color = Color.White,
+                    color = colorResource(R.color.font_primer),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
@@ -93,7 +101,9 @@ fun SettingsScreen(
 
             // 4. Status Online/Offline
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -101,34 +111,44 @@ fun SettingsScreen(
                     modifier = Modifier
                         .size(12.dp)
                         .clip(CircleShape)
-                        .background(if (isOnline) Color.Green else Color.Red)
+                        .background(if (isOnline) colorResource(R.color.cyan_primer) else colorResource(R.color.red_primer))
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = if (isOnline) "Online" else "Offline",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium,
-                    color = if (isOnline) Color.Green else Color.Red
+                    color = if (isOnline) colorResource(R.color.cyan_primer) else colorResource(R.color.red_primer)
                 )
             }
 
             // 5. Box Detail Informasi
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                border = BorderStroke(
+                    width = 2.dp,
+                    colorResource(id = R.color.cyan_primer)
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = colorResource(id = R.color.dark_primer)
+                )
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     // Baris 1: ESP-32
                     Text(
                         text = "ESP-32",
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.font_primer)
                     )
 
                     // Baris 2: IP Address dengan icon edit
@@ -139,11 +159,13 @@ fun SettingsScreen(
                         Text(
                             text = ipAddress,
                             style = MaterialTheme.typography.bodyLarge,
+                            color = colorResource(R.color.font_primer),
                             modifier = Modifier.weight(1f)
                         )
                         Icon(
                             painter = painterResource(id = R.drawable.ic_tab_settings),
                             contentDescription = "Edit IP",
+                            tint = colorResource(R.color.cyan_primer),
                             modifier = Modifier
                                 .size(20.dp)
                                 .clickable {
@@ -153,16 +175,19 @@ fun SettingsScreen(
                     }
 
                     // Baris 3: Shimarin Dev v.1.0 dengan tanggal di bawahnya
-                    Column {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         Text(
                             text = "Shimarin Dev v.1.0",
                             style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
+                            color = colorResource(R.color.font_primer)
                         )
                         Text(
                             text = LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = colorResource(R.color.grey_primer)
                         )
                     }
 
@@ -177,7 +202,8 @@ fun SettingsScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "MIT License",
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = colorResource(R.color.font_primer)
                         )
                     }
                 }

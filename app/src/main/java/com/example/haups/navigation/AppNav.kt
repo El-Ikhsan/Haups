@@ -53,7 +53,7 @@ fun AppNav(modifier: Modifier = Modifier) {
                     colorResource(id = R.color.white_outline_primer)// Warna garis (Ganti sesuai selera, misal Color.Gray)
                 ),
                 modifier = Modifier
-                    .padding(start = 30.dp, end = 30.dp, bottom = 20.dp)
+                    .padding(start = 30.dp, end = 30.dp, bottom = 28.dp)
                     .height(70.dp)
                     .width(350.dp),
                 shape = RoundedCornerShape(20.dp),

@@ -256,7 +256,7 @@ fun ScheduleItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(78.dp)
             .border(
                 width = if (schedule.isSelected) 2.dp else 0.dp,
                 color = if (schedule.isSelected) colorResource(R.color.cyan_primer) else Color.Transparent,
@@ -314,7 +314,7 @@ fun ScheduleItem(
                     checkedThumbColor = colorResource(R.color.cyan_primer),
                     checkedTrackColor = colorResource(R.color.cyan_primer).copy(alpha = 0.5f),
                     uncheckedThumbColor = colorResource(R.color.grey_primer),
-                    uncheckedTrackColor = colorResource(R.color.grey_primer).copy(alpha = 0.3f)
+                    uncheckedTrackColor = colorResource(R.color.white_outline_primer)
                 )
             )
         }
