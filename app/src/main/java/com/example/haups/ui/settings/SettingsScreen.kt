@@ -25,11 +25,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun SettingsScreen(
-    onBack: () -> Unit = {}
-) {
+fun SettingsScreen() {
     var isOnline by remember { mutableStateOf(false) }
     var ipAddress by remember { mutableStateOf("192.168.1.100") }
+    var showIpDialog by remember { mutableStateOf(false) }
 
     Scaffold(containerColor = Color.Transparent) { paddingValues ->
         Column(
@@ -169,7 +168,7 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .size(20.dp)
                                 .clickable {
-                                    // Fungsi edit IP address
+                                    showIpDialog = true
                                 }
                         )
                     }
@@ -209,6 +208,299 @@ fun SettingsScreen(
                 }
             }
         }
+    }
+
+    // IP Address Change Popup
+    ChangeIpAddressPopup(
+        showDialog = showIpDialog,
+        currentIp = ipAddress,
+        onDismiss = { showIpDialog = false },
+        onConfirm = { newIp ->
+            ipAddress = newIp
+        }
+    )
+}
+
+@Composable
+fun ChangeIpAddressPopup(
+    showDialog: Boolean,
+    currentIp: String,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var ipAddress by remember { mutableStateOf(currentIp) }
+    var isValidIp by remember { mutableStateOf(true) }
+
+    fun validateIpAddress(ip: String): Boolean {
+        if (ip.isBlank()) return false
+        val parts = ip.split(".")
+        if (parts.size != 4) return false
+        return parts.all { part ->
+            try {
+                val num = part.toInt()
+                num in 0..255
+            } catch (_: NumberFormatException) {
+                false
+            }
+        }
+    }
+
+    LaunchedEffect(currentIp) {
+        ipAddress = currentIp
+        isValidIp = validateIpAddress(currentIp)
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_tab_settings),
+                        contentDescription = "Settings Icon",
+                        tint = colorResource(R.color.cyan_primer),
+                        modifier = Modifier.size(28.dp)
+                    )
+                    Text(
+                        "Ganti Alamat IP",
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.font_primer),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.padding(vertical = 20.dp, horizontal = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    Text(
+                        "Masukkan alamat IP baru untuk ESP32:",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = colorResource(R.color.font_primer),
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = colorResource(R.color.grey_second)
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            OutlinedTextField(
+                                value = ipAddress,
+                                onValueChange = {
+                                    ipAddress = it
+                                    isValidIp = validateIpAddress(it)
+                                },
+                                label = {
+                                    Text(
+                                        "IP Address",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                },
+                                placeholder = {
+                                    Text(
+                                        "192.168.1.100",
+                                        color = colorResource(R.color.grey_primer)
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                isError = !isValidIp,
+                                textStyle = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                leadingIcon = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_tab_home),
+                                        contentDescription = "IP Icon",
+                                        tint = if (isValidIp) colorResource(R.color.cyan_primer)
+                                              else colorResource(R.color.red_primer),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = colorResource(R.color.cyan_primer),
+                                    focusedLabelColor = colorResource(R.color.cyan_primer),
+                                    errorBorderColor = colorResource(R.color.red_primer),
+                                    errorLabelColor = colorResource(R.color.red_primer),
+                                    unfocusedBorderColor = colorResource(R.color.white_outline_primer),
+                                    unfocusedLabelColor = colorResource(R.color.grey_primer),
+                                    focusedLeadingIconColor = colorResource(R.color.cyan_primer),
+                                    unfocusedLeadingIconColor = colorResource(R.color.grey_primer)
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true
+                            )
+
+                            if (!isValidIp && ipAddress.isNotBlank()) {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = colorResource(R.color.red_primer).copy(alpha = 0.1f)
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(12.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_tab_home),
+                                            contentDescription = "Error",
+                                            tint = colorResource(R.color.red_primer),
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Text(
+                                            text = "Format IP tidak valid\n(contoh: 192.168.1.100)",
+                                            color = colorResource(R.color.red_primer),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
+                                }
+                            } else if (isValidIp && ipAddress.isNotBlank()) {
+                                // Preview IP display
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = colorResource(R.color.cyan_primer).copy(alpha = 0.1f)
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(12.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_tab_home),
+                                            contentDescription = "Success",
+                                            tint = colorResource(R.color.cyan_primer),
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Text(
+                                            text = "IP Address Valid: $ipAddress",
+                                            color = colorResource(R.color.cyan_primer),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            }
+
+                            // Current IP info
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = colorResource(R.color.white_outline_primer).copy(alpha = 0.5f)
+                                ),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_tab_settings),
+                                        contentDescription = "Current",
+                                        tint = colorResource(R.color.grey_primer),
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Column {
+                                        Text(
+                                            text = "IP Saat Ini:",
+                                            color = colorResource(R.color.grey_primer),
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                        Text(
+                                            text = currentIp,
+                                            color = colorResource(R.color.font_primer),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (isValidIp && ipAddress.isNotBlank()) {
+                            onConfirm(ipAddress)
+                            onDismiss()
+                        }
+                    },
+                    enabled = isValidIp && ipAddress.isNotBlank(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(R.color.cyan_primer),
+                        contentColor = colorResource(R.color.dark_primer),
+                        disabledContainerColor = colorResource(R.color.grey_primer),
+                        disabledContentColor = colorResource(R.color.white_outline_primer)
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.height(48.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_tab_settings),
+                        contentDescription = "Save",
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        "Simpan",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = colorResource(R.color.font_primer),
+                        containerColor = Color.Transparent
+                    ),
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = colorResource(R.color.white_outline_primer)
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.height(48.dp)
+                ) {
+                    Text(
+                        "Batal",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            },
+            containerColor = colorResource(R.color.dark_primer),
+            titleContentColor = colorResource(R.color.font_primer),
+            textContentColor = colorResource(R.color.font_primer),
+            shape = RoundedCornerShape(20.dp)
+        )
     }
 }
 

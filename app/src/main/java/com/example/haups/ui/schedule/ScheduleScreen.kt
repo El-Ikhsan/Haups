@@ -37,6 +37,7 @@ data class FeedingSchedule(
 fun ScheduleScreen() {
     var currentDate by remember { mutableStateOf(LocalDate.now()) }
     val selectedTime = LocalTime.now()
+    var showAddDialog by remember { mutableStateOf(false) }
 
     var schedules by remember {
         mutableStateOf(listOf(
@@ -189,8 +190,7 @@ fun ScheduleScreen() {
             ) {
                 Button(
                     onClick = {
-                        val newId = (schedules.maxOfOrNull { it.id } ?: 0) + 1
-                        schedules = schedules + FeedingSchedule(newId, selectedTime, true)
+                        showAddDialog = true
                     },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp),
@@ -245,6 +245,16 @@ fun ScheduleScreen() {
             }
         }
     }
+
+    // Add Schedule Popup
+    AddSchedulePopup(
+        showDialog = showAddDialog,
+        onDismiss = { showAddDialog = false },
+        onConfirm = { time ->
+            val newId = (schedules.maxOfOrNull { it.id } ?: 0) + 1
+            schedules = schedules + FeedingSchedule(newId, time, true)
+        }
+    )
 }
 
 @Composable
@@ -318,6 +328,253 @@ fun ScheduleItem(
                 )
             )
         }
+    }
+}
+
+@Composable
+fun AddSchedulePopup(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: (LocalTime) -> Unit
+) {
+    var hour by remember { mutableStateOf("08") }
+    var minute by remember { mutableStateOf("00") }
+    var isValidTime by remember { mutableStateOf(true) }
+
+    fun validateTime(h: String, m: String): Boolean {
+        return try {
+            val hourInt = h.toIntOrNull() ?: return false
+            val minuteInt = m.toIntOrNull() ?: return false
+            hourInt in 0..23 && minuteInt in 0..59
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_tab_schedule),
+                        contentDescription = "Schedule Icon",
+                        tint = colorResource(R.color.cyan_primer),
+                        modifier = Modifier.size(28.dp)
+                    )
+                    Text(
+                        "Tambah Jadwal Baru",
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.font_primer),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.padding(vertical = 20.dp, horizontal = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    Text(
+                        "Pilih waktu untuk jadwal pakan:",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = colorResource(R.color.font_primer),
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = colorResource(R.color.grey_second)
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                OutlinedTextField(
+                                    value = hour,
+                                    onValueChange = {
+                                        if (it.length <= 2) {
+                                            hour = it.filter { char -> char.isDigit() }
+                                            isValidTime = validateTime(hour, minute)
+                                        }
+                                    },
+                                    label = { Text("Jam", style = MaterialTheme.typography.labelMedium) },
+                                    modifier = Modifier.width(90.dp),
+                                    isError = !isValidTime,
+                                    textStyle = MaterialTheme.typography.titleLarge.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        textAlign = TextAlign.Center
+                                    ),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = colorResource(R.color.cyan_primer),
+                                        focusedLabelColor = colorResource(R.color.cyan_primer),
+                                        errorBorderColor = colorResource(R.color.red_primer),
+                                        errorLabelColor = colorResource(R.color.red_primer),
+                                        unfocusedBorderColor = colorResource(R.color.white_outline_primer),
+                                        unfocusedLabelColor = colorResource(R.color.grey_primer)
+                                    ),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+
+                                Text(
+                                    ":",
+                                    modifier = Modifier.padding(horizontal = 16.dp),
+                                    style = MaterialTheme.typography.displayMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = colorResource(R.color.cyan_primer)
+                                )
+
+                                OutlinedTextField(
+                                    value = minute,
+                                    onValueChange = {
+                                        if (it.length <= 2) {
+                                            minute = it.filter { char -> char.isDigit() }
+                                            isValidTime = validateTime(hour, minute)
+                                        }
+                                    },
+                                    label = { Text("Menit", style = MaterialTheme.typography.labelMedium) },
+                                    modifier = Modifier.width(90.dp),
+                                    isError = !isValidTime,
+                                    textStyle = MaterialTheme.typography.titleLarge.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        textAlign = TextAlign.Center
+                                    ),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = colorResource(R.color.cyan_primer),
+                                        focusedLabelColor = colorResource(R.color.cyan_primer),
+                                        errorBorderColor = colorResource(R.color.red_primer),
+                                        errorLabelColor = colorResource(R.color.red_primer),
+                                        unfocusedBorderColor = colorResource(R.color.white_outline_primer),
+                                        unfocusedLabelColor = colorResource(R.color.grey_primer)
+                                    ),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                            }
+
+                            if (!isValidTime) {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = colorResource(R.color.red_primer).copy(alpha = 0.1f)
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(12.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_tab_home),
+                                            contentDescription = "Error",
+                                            tint = colorResource(R.color.red_primer),
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Text(
+                                            text = "Format waktu tidak valid\n(Jam: 00-23, Menit: 00-59)",
+                                            color = colorResource(R.color.red_primer),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
+                                }
+                            } else {
+                                // Preview time display
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = colorResource(R.color.cyan_primer).copy(alpha = 0.1f)
+                                    ),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text(
+                                        text = "Preview: ${hour.padStart(2, '0')}:${minute.padStart(2, '0')}",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = colorResource(R.color.cyan_primer)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (isValidTime && hour.isNotBlank() && minute.isNotBlank()) {
+                            val time = LocalTime.of(hour.toInt(), minute.toInt())
+                            onConfirm(time)
+                            onDismiss()
+                        }
+                    },
+                    enabled = isValidTime && hour.isNotBlank() && minute.isNotBlank(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(R.color.cyan_primer),
+                        contentColor = colorResource(R.color.dark_primer),
+                        disabledContainerColor = colorResource(R.color.grey_primer),
+                        disabledContentColor = colorResource(R.color.white_outline_primer)
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.height(48.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_tab_schedule),
+                        contentDescription = "Add",
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        "Tambah",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = colorResource(R.color.font_primer),
+                        containerColor = Color.Transparent
+                    ),
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = colorResource(R.color.white_outline_primer)
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.height(48.dp)
+                ) {
+                    Text(
+                        "Batal",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            },
+            containerColor = colorResource(R.color.dark_primer),
+            titleContentColor = colorResource(R.color.font_primer),
+            textContentColor = colorResource(R.color.font_primer),
+            shape = RoundedCornerShape(20.dp)
+        )
     }
 }
 

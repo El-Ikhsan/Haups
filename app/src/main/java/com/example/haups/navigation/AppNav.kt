@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -20,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.draw.clip
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -74,15 +72,6 @@ fun AppNav(modifier: Modifier = Modifier) {
                             NavigationRoute.Schedule -> R.drawable.ic_tab_schedule
                             NavigationRoute.Logs -> R.drawable.ic_tab_logs
                             NavigationRoute.Settings -> R.drawable.ic_tab_settings
-                            else -> R.mipmap.ic_launcher // Default icon jika error
-                        }
-
-                        val labelRes = when (screen) {
-                            NavigationRoute.Home -> R.string.tab_home
-                            NavigationRoute.Schedule -> R.string.tab_schedule
-                            NavigationRoute.Logs -> R.string.tab_logs
-                            NavigationRoute.Settings -> R.string.tab_settings
-                            else -> R.string.app_name
                         }
 
                         NavigationBarItem(
@@ -156,7 +145,7 @@ fun AppNav(modifier: Modifier = Modifier) {
                 com.example.haups.ui.logs.LogsScreen()
             }
             composable(NavigationRoute.Settings.route) {
-                com.example.haups.ui.settings.SettingsScreen(onBack = { navController.popBackStack() })
+                com.example.haups.ui.settings.SettingsScreen()
             }
         }
     }
